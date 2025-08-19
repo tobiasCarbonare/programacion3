@@ -109,6 +109,7 @@
                 <p class="text-gray-700">Imagina que quieres que una computadora aprenda a distinguir entre fotos de gatos y perros. Antes, habría que programar reglas fijas como "si tiene orejas puntiagudas, es gato". Con Machine Learning, en lugar de dar reglas, le das miles de ejemplos (fotos etiquetadas) y el algoritmo aprende solo los patrones. Es como un niño: no le explicas las reglas de cómo es un perro, le muestras muchos y aprende a reconocerlos por sí mismo.</p>
             </div>
 
+            <h3 class="text-2xl font-bold mb-3 text-[#a4907c] text-center">Clasificacion de algoritmos</h3>
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="card bg-white p-6 rounded-xl shadow-md">
                     <h4 class="text-xl font-bold mb-2 text-[#a4907c]">🧠 Supervisado</h4>
@@ -136,7 +137,7 @@
         <section id="datascience" class="mb-20 scroll-mt-20">
             <h2 class="text-4xl font-bold text-center mb-4 text-[#8d7b68]">El Mundo de la Ciencia de Datos</h2>
             <p class="text-center max-w-3xl mx-auto text-lg mb-12">La Ciencia de Datos es el campo completo que utiliza el Machine Learning como una de sus herramientas más potentes. Descubre el proceso que sigue un científico de datos para transformar datos crudos en decisiones de negocio valiosas.</p>
-
+            <p class="text-center mb-8">En general, el proceso que utiliza la Ciencia de Datos para explorar el mundo usando datos es el siguiente:</p>
             <div class="bg-white p-8 rounded-xl shadow-md">
                 <div id="workflow-container" class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 text-center">
                 </div>
@@ -146,6 +147,26 @@
             </div>
         </section>
 
+        <section id="ml-process" class="mb-20 scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-[#8d7b68]">Pasos para Construir un Modelo de Machine Learning</h2>
+            <p class="text-center max-w-3xl mx-auto text-lg mb-12">El desarrollo de un modelo de Machine Learning sigue una serie de pasos clave para asegurar buenos resultados y utilidad en el mundo real.</p>
+            <div class="bg-white p-8 rounded-xl shadow-md">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                    <div class="workflow-step flex-1 bg-gray-100 p-4 rounded-lg border">1. Recolectar datos</div>
+                    <div class="text-2xl text-gray-300 hidden md:block">&rarr;</div>
+                    <div class="workflow-step flex-1 bg-gray-100 p-4 rounded-lg border">2. Preprocesar datos</div>
+                    <div class="text-2xl text-gray-300 hidden md:block">&rarr;</div>
+                    <div class="workflow-step flex-1 bg-gray-100 p-4 rounded-lg border">3. Explorar datos</div>
+                    <div class="text-2xl text-gray-300 hidden md:block">&rarr;</div>
+                    <div class="workflow-step flex-1 bg-gray-100 p-4 rounded-lg border">4. Entrenar el algoritmo</div>
+                    <div class="text-2xl text-gray-300 hidden md:block">&rarr;</div>
+                    <div class="workflow-step flex-1 bg-gray-100 p-4 rounded-lg border">5. Evaluar el modelo</div>
+                    <div class="text-2xl text-gray-300 hidden md:block">&rarr;</div>
+                    <div class="workflow-step flex-1 bg-gray-100 p-4 rounded-lg border">6. Usar el modelo en problemas reales</div>
+                </div>
+            </div>
+
+        </section>
         <section id="algorithms" class="mb-20 scroll-mt-20">
             <h2 class="text-4xl font-bold text-center mb-4 text-[#8d7b68]">Explorador de Algoritmos</h2>
             <p class="text-center max-w-3xl mx-auto text-lg mb-12">Cada problema requiere una herramienta diferente. Aquí puedes interactuar con algunos de los algoritmos de Machine Learning más comunes y ver una representación visual simple de cómo funcionan.</p>
@@ -213,6 +234,57 @@
     </footer>
 
     <script>
+        const mlProcessSteps = [
+    {
+        id: 'step1',
+        name: 'Recolectar datos',
+        detail: 'Podemos recolectar datos desde muchas fuentes: sitios web, APIs, bases de datos, dispositivos o conjuntos públicos. Es un paso fundamental y suele ser el más laborioso.'
+    },
+    {
+        id: 'step2',
+        name: 'Preprocesar datos',
+        detail: 'Aseguramos que los datos tengan el formato correcto para el algoritmo. Incluye limpieza, transformación y manejo de valores faltantes o atípicos.'
+    },
+    {
+        id: 'step3',
+        name: 'Explorar datos',
+        detail: 'Analizamos los datos para detectar patrones, valores atípicos y relaciones. Utilizamos estadísticas y gráficos para comprender mejor la información.'
+    },
+    {
+        id: 'step4',
+        name: 'Entrenar el algoritmo',
+        detail: 'Alimentamos el algoritmo con los datos procesados para que aprenda y pueda hacer predicciones útiles.'
+    },
+    {
+        id: 'step5',
+        name: 'Evaluar el modelo',
+        detail: 'Ponemos a prueba el modelo para medir su precisión. Si el rendimiento no es suficiente, ajustamos parámetros y volvemos a entrenar.'
+    },
+    {
+        id: 'step6',
+        name: 'Usar el modelo en problemas reales',
+        detail: 'Aplicamos el modelo entrenado a situaciones reales y seguimos monitoreando su rendimiento para mejorarlo si es necesario.'
+    }
+];
+// ...existing code...
+
+// Interactividad para los pasos de ML
+const mlProcessContainer = document.querySelector('#ml-process .flex');
+const mlProcessDetails = document.createElement('div');
+mlProcessDetails.className = "mt-8 p-6 bg-[#fdfbf8] rounded-lg border border-gray-200 min-h-[100px]";
+mlProcessDetails.innerHTML = '<p class="text-gray-700">Haz clic en un paso para ver su descripción.</p>';
+mlProcessContainer.parentNode.appendChild(mlProcessDetails);
+
+mlProcessContainer.querySelectorAll('.workflow-step').forEach((stepEl, idx) => {
+    stepEl.dataset.id = mlProcessSteps[idx].id;
+    stepEl.addEventListener('click', function () {
+        mlProcessContainer.querySelectorAll('.workflow-step').forEach(el => el.classList.remove('active'));
+        this.classList.add('active');
+        const stepData = mlProcessSteps.find(s => s.id === this.dataset.id);
+        mlProcessDetails.innerHTML = `<p class="font-bold text-[#a4907c]">${stepData.name}</p><p>${stepData.detail}</p>`;
+    });
+});
+// ...existing code...
         document.addEventListener('DOMContentLoaded', () => {
             const data = {
                 workflow: [
