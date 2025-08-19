@@ -103,3 +103,21 @@ button, a {
   display: flex;
   justify-content: center;
 }
+
+/* Apila los pasos y oculta las flechas en mobile/tablet */
+@media (max-width: 1023px) {
+  #workflow-container,
+  #ml-process .flex {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .workflow-step {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-bottom: 1rem;
+    word-break: break-word;
+  }
+  .text-2xl.text-gray-300 {
+    display: none !important;
+  }
+}
