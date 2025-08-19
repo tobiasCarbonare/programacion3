@@ -97,3 +97,9 @@ p, h1, h2, h3, h4, h5, h6, li {
 button, a {
   touch-action: manipulation;
 }
+.video {
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
