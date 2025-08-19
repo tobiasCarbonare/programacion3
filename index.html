@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador Interactivo de Machine Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed with a non-linear, thematic section-based architecture (Fundamentals, Data Science, Algorithms, Applications) accessible via a main navigation. This structure allows users to freely explore topics of interest rather than following a rigid document flow. Interactivity is central, with clickable cards and a dynamic algorithm explorer to transform passive reading into active learning and improve comprehension of complex topics. -->
+    <!-- Visualization & Content Choices: 1. ML Types: Goal=Compare -> Method=Clickable Cards -> Interaction=JS toggle visibility -> Justification=Side-by-side comparison is intuitive. 2. DS Workflow: Goal=Organize -> Method=Styled HTML/CSS flowchart -> Interaction=Click step to show details -> Justification=Visualizes process better than a list. 3. Algorithms: Goal=Inform/Compare -> Method=Chart.js Canvas + Text Block -> Interaction=Buttons update chart & text -> Justification=Visual data representation aids understanding of abstract algorithms. 4. Applications: Goal=Inform -> Method=Icon Grid -> Interaction=Hover effects -> Justification=Quick, scannable real-world examples. Library=Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfbf8;
+            color: #4a4a4a;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active {
+            color: #c5a687;
+            border-bottom-color: #c5a687;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .workflow-step {
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .workflow-step.active {
+            background-color: #c5a687;
+            color: white;
+        }
+        .algo-button {
+            transition: background-color 0.3s, color 0.3s, transform 0.2s;
+        }
+        .algo-button.active {
+            background-color: #8d7b68;
+            color: white;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-[#8d7b68]">ML Interactivo</h1>
+          <div class="relative group hidden md:block" tabindex="0">
+    <button class="nav-link text-gray-600 hover:text-[#c5a687] border-b-2 border-transparent pb-1 focus:outline-none">
+        Conceptos Fundamentales
+    </button>
+    <div class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg opacity-0 
+        group-hover:opacity-100 group-hover:pointer-events-auto 
+        group-focus-within:opacity-100 group-focus-within:pointer-events-auto 
+        pointer-events-none transition-opacity z-50">
+        <a href="#fundamentals" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Fundamentos</a>
+        <a href="#datascience" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Ciencia de Datos</a>
+        <a href="#algorithms" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Algoritmos</a>
+        <a href="#applications" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Aplicaciones</a>
+    </div>
+</div>
+            <!-- Botón menú móvil -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <span class="text-2xl">☰</span>
+            </button>
+        </nav>
+        <!-- Menú móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white px-6 pb-4">
+            <a href="#fundamentals" class="block py-2 text-gray-600">Fundamentos</a>
+            <a href="#datascience" class="block py-2 text-gray-600">Ciencia de Datos</a>
+            <a href="#algorithms" class="block py-2 text-gray-600">Algoritmos</a>
+            <a href="#applications" class="block py-2 text-gray-600">Aplicaciones</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="fundamentals" class="mb-20 scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-[#8d7b68]">Conceptos Fundamentales</h2>
+            <p class="text-center max-w-3xl mx-auto text-lg mb-12">Aquí exploramos qué es el Machine Learning y sus principales tipos. Es el punto de partida para entender cómo las máquinas aprenden de los datos para tomar decisiones inteligentes.</p>
+            
+            <div class="bg-white p-8 rounded-xl shadow-md mb-12 card">
+                <h3 class="text-2xl font-bold mb-3 text-[#a4907c]">¿Qué es Machine Learning?</h3>
+                <p class="text-gray-700">Imagina que quieres que una computadora aprenda a distinguir entre fotos de gatos y perros. Antes, habría que programar reglas fijas como "si tiene orejas puntiagudas, es gato". Con Machine Learning, en lugar de dar reglas, le das miles de ejemplos (fotos etiquetadas) y el algoritmo aprende solo los patrones. Es como un niño: no le explicas las reglas de cómo es un perro, le muestras muchos y aprende a reconocerlos por sí mismo.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <h4 class="text-xl font-bold mb-2 text-[#a4907c]">🧠 Supervisado</h4>
+                    <p>Se le dan datos con la respuesta conocida (etiquetas). El algoritmo aprende la relación y puede predecir nuevas respuestas.</p>
+                    <p class="mt-4 text-sm bg-[#fdfbf8] p-3 rounded-lg border border-gray-200"><strong>Ejemplo:</strong> Predecir si un cliente pagará un préstamo, usando su historial de pagos anteriores.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <h4 class="text-xl font-bold mb-2 text-[#a4907c]">👁️ No Supervisado</h4>
+                    <p>Se le dan datos sin etiquetas, y el algoritmo busca patrones o estructuras ocultas para agruparlos.</p>
+                    <p class="mt-4 text-sm bg-[#fdfbf8] p-3 rounded-lg border border-gray-200"><strong>Ejemplo:</strong> Un supermercado agrupa clientes según sus compras (familiares, solteros, etc.) sin saber de antemano esos grupos.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <h4 class="text-xl font-bold mb-2 text-[#a4907c]">🎮 Por Refuerzo</h4>
+                    <p>El algoritmo aprende por ensayo y error, recibiendo recompensas por acciones correctas y castigos por las incorrectas.</p>
+                    <p class="mt-4 text-sm bg-[#fdfbf8] p-3 rounded-lg border border-gray-200"><strong>Ejemplo:</strong> Una IA aprende a jugar ajedrez. Gana una partida (recompensa), pierde una partida (castigo).</p>
+                </div>
+            </div>
+
+            <div class="mt-12 bg-red-50 border border-red-200 p-6 rounded-xl">
+                <h4 class="text-xl font-bold text-red-800 mb-2">🚨 Un Problema Común: Sobreajuste (Overfitting)</h4>
+                <p class="text-red-700">Ocurre cuando el modelo aprende "de memoria" los datos de entrenamiento en lugar de los patrones generales. Es como un estudiante que memoriza las respuestas de un examen pero no sabe resolver problemas similares. Para evitarlo, los datos se dividen para entrenar y para validar que el modelo generaliza bien.</p>
+            </div>
+        </section>
+
+        <section id="datascience" class="mb-20 scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-[#8d7b68]">El Mundo de la Ciencia de Datos</h2>
+            <p class="text-center max-w-3xl mx-auto text-lg mb-12">La Ciencia de Datos es el campo completo que utiliza el Machine Learning como una de sus herramientas más potentes. Descubre el proceso que sigue un científico de datos para transformar datos crudos en decisiones de negocio valiosas.</p>
+
+            <div class="bg-white p-8 rounded-xl shadow-md">
+                <div id="workflow-container" class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                </div>
+                <div id="workflow-details" class="mt-8 p-6 bg-[#fdfbf8] rounded-lg border border-gray-200 min-h-[100px]">
+                    <p class="text-gray-700">Haz clic en un paso para ver su descripción.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="algorithms" class="mb-20 scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-[#8d7b68]">Explorador de Algoritmos</h2>
+            <p class="text-center max-w-3xl mx-auto text-lg mb-12">Cada problema requiere una herramienta diferente. Aquí puedes interactuar con algunos de los algoritmos de Machine Learning más comunes y ver una representación visual simple de cómo funcionan.</p>
+            
+            <div class="bg-white p-8 rounded-xl shadow-md">
+                <div class="flex flex-wrap justify-center gap-3 mb-8" id="algo-buttons-container">
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div id="algo-info">
+                        <h3 id="algo-title" class="text-2xl font-bold text-[#a4907c] mb-2">Selecciona un algoritmo</h3>
+                        <p id="algo-description" class="text-gray-700">Elige un algoritmo de la lista de arriba para aprender sobre él y ver un ejemplo visual de su funcionamiento.</p>
+                        <p id="algo-example" class="mt-4 text-sm bg-[#fdfbf8] p-3 rounded-lg border border-gray-200"></p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="algoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="applications" class="scroll-mt-20">
+            <h2 class="text-4xl font-bold text-center mb-4 text-[#8d7b68]">Aplicaciones en la Vida Real</h2>
+            <p class="text-center max-w-3xl mx-auto text-lg mb-12">El Machine Learning no es ciencia ficción, ya forma parte de nuestro día a día. Estas son solo algunas de las áreas donde esta tecnología está generando un gran impacto.</p>
+            
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <p class="text-3xl mb-3">🌐</p>
+                    <h4 class="text-xl font-bold mb-2">Motores de Búsqueda</h4>
+                    <p>Google y Bing usan ML para entender tus búsquedas y mostrarte los resultados más relevantes.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <p class="text-3xl mb-3">💳</p>
+                    <h4 class="text-xl font-bold mb-2">Detección de Fraude</h4>
+                    <p>Los bancos analizan patrones de transacciones para detectar y bloquear actividades fraudulentas en tiempo real.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <p class="text-3xl mb-3">🩺</p>
+                    <h4 class="text-xl font-bold mb-2">Diagnóstico Médico</h4>
+                    <p>Se entrenan modelos para analizar imágenes médicas (rayos X, resonancias) y ayudar a detectar enfermedades.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <p class="text-3xl mb-3">📈</p>
+                    <h4 class="text-xl font-bold mb-2">Marketing Personalizado</h4>
+                    <p>Las empresas segmentan a sus clientes para ofrecerles productos y promociones relevantes a sus intereses.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <p class="text-3xl mb-3">🗣️</p>
+                    <h4 class="text-xl font-bold mb-2">Asistentes de Voz</h4>
+                    <p>Siri y Alexa utilizan ML para reconocer tu voz, entender lo que dices y ejecutar comandos.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-md">
+                    <p class="text-3xl mb-3">🎬</p>
+                    <h4 class="text-xl font-bold mb-2">Sistemas de Recomendación</h4>
+                    <p>Netflix y Spotify analizan tus gustos para sugerirte películas, series o música que te podría encantar.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white mt-20 border-t">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-600">
+            <p>Explorador Interactivo de Machine Learning & Ciencia de Datos.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = {
+                workflow: [
+                    { id: 'define', name: 'Definir Objetivo', detail: '¿Qué quiero predecir? Ejemplo: ¿Qué clientes van a abandonar un servicio de streaming?' },
+                    { id: 'collect', name: 'Recolectar y Limpiar', detail: 'La parte más larga. Se toman datos de clientes, se corrigen errores, duplicados o valores faltantes.' },
+                    { id: 'explore', name: 'Explorar Datos', detail: 'Se usan estadísticas y gráficos. Ejemplo: ver si la gente que abandona el servicio ve menos de 2 horas por semana.' },
+                    { id: 'model', name: 'Construir Modelo', detail: 'Se entrena un algoritmo de Machine Learning con los datos preparados.' },
+                    { id: 'communicate', name: 'Comunicar Resultados', detail: 'Se presentan los hallazgos y predicciones a los responsables para la toma de decisiones.' }
+                ],
+                algorithms: {
+                    'Regresión Lineal': {
+                        description: 'Se usa para predecir un valor numérico continuo. Busca la línea recta que mejor se ajusta a los datos.',
+                        example: 'Ej: Predecir el precio de una casa según su tamaño en metros cuadrados.',
+                        chart: 'linear'
+                    },
+                    'Regresión Logística': {
+                        description: 'Aunque su nombre contiene "regresión", se usa para clasificación, es decir, predecir una categoría.',
+                        example: 'Ej: ¿Un cliente pagará su préstamo? → Sí o No.',
+                        chart: 'logistic'
+                    },
+                    'Árboles de Decisión': {
+                        description: 'Toma decisiones basadas en una serie de preguntas, creando una estructura similar a un árbol.',
+                        example: 'Ej: "¿La edad es menor a 30?" → Sí/No. "¿Tiene deudas?" → Sí/No.',
+                        chart: 'tree'
+                    },
+                    'SVM': {
+                        description: 'Encuentra la "frontera" o hiperplano que mejor separa dos clases de datos en un espacio de características.',
+                        example: 'Ej: Separar correos en "spam" y "no spam" basándose en las palabras que contienen.',
+                        chart: 'svm'
+                    },
+                    'K-means': {
+                        description: 'Es un algoritmo no supervisado que agrupa datos sin etiquetas en "K" número de clusters o grupos.',
+                        example: 'Ej: Segmentar clientes de una tienda en 3 grupos según sus hábitos de compra.',
+                        chart: 'kmeans'
+                    }
+                }
+            };
+
+            const workflowContainer = document.getElementById('workflow-container');
+            const workflowDetails = document.getElementById('workflow-details');
+            
+            data.workflow.forEach((step, index) => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'workflow-step flex-1 bg-gray-100 p-4 rounded-lg border';
+                stepEl.textContent = step.name;
+                stepEl.dataset.id = step.id;
+                workflowContainer.appendChild(stepEl);
+
+                if (index < data.workflow.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'text-2xl text-gray-300 hidden md:block';
+                    arrow.innerHTML = '&rarr;';
+                    workflowContainer.appendChild(arrow);
+                }
+            });
+
+            workflowContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('workflow-step')) {
+                    const stepId = e.target.dataset.id;
+                    const stepData = data.workflow.find(s => s.id === stepId);
+                    workflowDetails.innerHTML = `<p class="font-bold text-[#a4907c]">${stepData.name}</p><p>${stepData.detail}</p>`;
+                    
+                    document.querySelectorAll('.workflow-step').forEach(el => el.classList.remove('active'));
+                    e.target.classList.add('active');
+                }
+            });
+
+            const algoButtonsContainer = document.getElementById('algo-buttons-container');
+            const algoTitle = document.getElementById('algo-title');
+            const algoDescription = document.getElementById('algo-description');
+            const algoExample = document.getElementById('algo-example');
+            const ctx = document.getElementById('algoChart').getContext('2d');
+            let algoChart = null;
+
+            Object.keys(data.algorithms).forEach(name => {
+                const button = document.createElement('button');
+                button.className = 'algo-button bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm';
+                button.textContent = name;
+                button.dataset.name = name;
+                algoButtonsContainer.appendChild(button);
+            });
+
+            algoButtonsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('algo-button')) {
+                    const algoName = e.target.dataset.name;
+                    const algoData = data.algorithms[algoName];
+
+                    algoTitle.textContent = algoName;
+                    algoDescription.textContent = algoData.description;
+                    algoExample.textContent = algoData.example;
+
+                    document.querySelectorAll('.algo-button').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    renderChart(algoData.chart);
+                }
+            });
+            
+            function generateScatterData(numPoints, numClusters, separation) {
+                const data = [];
+                for (let i = 0; i < numClusters; i++) {
+                    const centerX = Math.random() * separation * (i % 2 === 0 ? 1 : -1);
+                    const centerY = Math.random() * separation * (i > 1 ? 1 : -1);
+                    for (let j = 0; j < numPoints / numClusters; j++) {
+                        data.push({
+                            x: centerX + (Math.random() - 0.5) * 10,
+                            y: centerY + (Math.random() - 0.5) * 10,
+                            cluster: i
+                        });
+                    }
+                }
+                return data;
+            }
+
+            function renderChart(type) {
+                if (algoChart) {
+                    algoChart.destroy();
+                }
+
+                let chartConfig;
+                const colors = ['#c5a687', '#8d7b68', '#a4907c', '#6c584c'];
+
+                switch (type) {
+                    case 'linear':
+                        chartConfig = {
+                            type: 'scatter',
+                            data: {
+                                datasets: [{
+                                    label: 'Datos de Viviendas',
+                                    data: [{x: 50, y: 100}, {x: 60, y: 125}, {x: 70, y: 140}, {x: 80, y: 170}, {x: 90, y: 185}, {x: 100, y: 210}, {x: 110, y: 220}],
+                                    backgroundColor: colors[0]
+                                }, {
+                                    type: 'line',
+                                    label: 'Línea de Regresión',
+                                    data: [{x: 50, y: 105}, {x: 110, y: 225}],
+                                    borderColor: colors[1],
+                                    fill: false,
+                                    tension: 0.1
+                                }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Precio vs. Tamaño de Casa' } } }
+                        };
+                        break;
+                    case 'logistic':
+                    case 'svm':
+                        const svmData = generateScatterData(50, 2, 15);
+                        chartConfig = {
+                            type: 'scatter',
+                            data: {
+                                datasets: [{
+                                    label: 'Clase A (No Paga)',
+                                    data: svmData.filter(d => d.cluster === 0),
+                                    backgroundColor: colors[0]
+                                }, {
+                                    label: 'Clase B (Sí Paga)',
+                                    data: svmData.filter(d => d.cluster === 1),
+                                    backgroundColor: colors[1]
+                                }, {
+                                    type: 'line', // Agregado: Visualización de la frontera de decisión
+                                    label: 'Frontera de Decisión',
+                                    data: [{x: -30, y: 0}, {x: 30, y: 0}],
+                                    borderColor: '#c5a687',
+                                    borderDash: [5, 5],
+                                    pointRadius: 0,
+                                    fill: false
+                                }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Clasificación de Clientes' } } }
+                        };
+                        break;
+                    case 'kmeans':
+                        const kmeansData = generateScatterData(60, 3, 20);
+                        chartConfig = {
+                            type: 'scatter',
+                            data: {
+                                datasets: [
+                                    { label: 'Cluster 1', data: kmeansData.filter(d => d.cluster === 0), backgroundColor: colors[0] },
+                                    { label: 'Cluster 2', data: kmeansData.filter(d => d.cluster === 1), backgroundColor: colors[1] },
+                                    { label: 'Cluster 3', data: kmeansData.filter(d => d.cluster === 2), backgroundColor: colors[2] },
+                                    { // Agregado: Visualización de los centroides
+                                      type: 'scatter',
+                                      label: 'Centroides',
+                                      data: [{x: -15, y: -15}, {x: 0, y: 15}, {x: 15, y: -15}],
+                                      backgroundColor: '#4a4a4a',
+                                      pointStyle: 'crossRot',
+                                      radius: 10,
+                                      borderWidth: 2
+                                    }
+                                ]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Segmentación de Clientes' } } }
+                        };
+                        break;
+                    case 'tree':
+                        chartConfig = {
+                            type: 'bar',
+                            data: {
+                                labels: ['Grupo A', 'Grupo B'],
+                                datasets: [{
+                                    label: 'Resultado de Decisión',
+                                    data: [75, 25],
+                                    backgroundColor: [colors[0], colors[1]]
+                                }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Resultado de un Árbol de Decisión Simple' } } }
+                        };
+                        break;
+                }
+                if (chartConfig) {
+                    algoChart = new Chart(ctx, chartConfig);
+                }
+            }
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (!mobileMenu.classList.contains('hidden')) {
+                         mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
