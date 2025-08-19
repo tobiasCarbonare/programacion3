@@ -1,0 +1,96 @@
+/* Asegura que las imágenes, canvas y videos no desborden */
+img, canvas, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Hace que las tarjetas ocupen todo el ancho en móvil */
+.card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Ajusta los grids para pantallas pequeñas */
+.grid, .flex {
+  min-width: 0;
+}
+
+/* Corrige el scroll horizontal accidental */
+body, html {
+  overflow-x: hidden;
+}
+
+/* Menú móvil: ocupa todo el ancho y se apila */
+#mobile-menu {
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+/* Ajusta el contenedor principal en pantallas pequeñas */
+.container, .main-container {
+  width: 100% !important;
+  max-width: 100vw !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+/* Responsive para el flujo de pasos */
+@media (max-width: 767px) {
+  .workflow-step {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+  .text-2xl.text-gray-300 {
+    display: none !important;
+  }
+}
+
+/* Responsive para el grid de aplicaciones */
+@media (max-width: 639px) {
+  .grid, .grid > * {
+    grid-template-columns: 1fr !important;
+    width: 100%;
+  }
+}
+
+/* Responsive para el explorador de algoritmos */
+@media (max-width: 767px) {
+  .grid.md\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+  .chart-container {
+    height: 250px !important;
+    max-width: 100vw !important;
+  }
+}
+
+/* Footer responsive */
+footer {
+  font-size: 0.95rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  word-break: break-word;
+}
+
+/* Navbar responsive: logo y menú */
+@media (max-width: 767px) {
+  nav.container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+/* Asegura que los textos largos no desborden */
+p, h1, h2, h3, h4, h5, h6, li {
+  word-break: break-word;
+}
+
+/* Mejora la experiencia táctil en botones y enlaces */
+button, a {
+  touch-action: manipulation;
+}
