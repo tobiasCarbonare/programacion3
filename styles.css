@@ -41,9 +41,12 @@ body, html {
 /* Responsive para el flujo de pasos */
 @media (max-width: 767px) {
   .workflow-step {
+    width: 100% !important;
+    min-width: 0 !important;
+    word-break: break-word;
     margin-bottom: 1rem;
-    width: 100%;
   }
+  /* Oculta las flechas en móvil */
   .text-2xl.text-gray-300 {
     display: none !important;
   }
